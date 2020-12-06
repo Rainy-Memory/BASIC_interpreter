@@ -9,14 +9,13 @@
 
 #include <string>
 #include "statement.h"
-#include "../StanfordCPPLib/simpio.h"
 
 using namespace std;
 
 /* Implementation of the ControlStatement class */
 
 ControlStatement::ControlStatement(int msg_) {
-    msg=msg_;
+    msg = msg_;
 }
 
 int ControlStatement::getMessage() {
@@ -69,8 +68,8 @@ print_statement::~print_statement() {
 }
 
 void print_statement::execute(EvalState &state) {
-    int value=exp->eval(state);
-    cout<<value<<endl;
+    int value = exp->eval(state);
+    cout << value << endl;
 }
 
 
@@ -115,14 +114,45 @@ void goto_statement::execute(EvalState &state) {
 }
 
 
-if_statement::if_statement() {
-
+if_statement::if_statement(string line_) {
+    TokenScanner scanner_;
+    scanner_.ignoreWhitespace();
+    scanner_.scanNumbers();
+    scanner_.setInput(line_);
+    string n_str=scanner_.nextToken();
+    n_str=scanner_.nextToken();
+    try {
+        lhs = readE(scanner_);
+    } catch (...) {
+        throw ErrorException("SYNTAX ERROR");
+    }
+    op=scanner_.nextToken();
+    if(op!="<"&&op!=">"&&op!="=")throw ErrorException("SYNTAX ERROR");
+    try {
+        rhs = readE(scanner_);
+    } catch (...) {
+        throw ErrorException("SYNTAX ERROR");
+    }
+    n_str=scanner_.nextToken();
+    n_str=scanner_.nextToken();
+    n=stringToInteger(n_str);
 }
 
 if_statement::~if_statement() {
-
+    delete lhs;
+    delete rhs;
 }
 
 void if_statement::execute(EvalState &state) {
+    lhs_value = lhs->eval(state);
+    rhs_value = rhs->eval(state);
+    bool cmp = judge();
+    if (cmp)throw ControlStatement(n);
+}
 
+bool if_statement::judge() {
+    if (op == ">")return lhs_value > rhs_value;
+    else if (op == "<")return lhs_value < rhs_value;
+    else if (op == "=")return lhs_value == rhs_value;
+    else throw ErrorException("SYNTAX ERROR");
 }

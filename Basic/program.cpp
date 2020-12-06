@@ -11,9 +11,6 @@
 #include <string>
 #include "program.h"
 #include "statement.h"
-#include "parser.h"
-#include "../StanfordCPPLib/tokenscanner.h"
-#include "../StanfordCPPLib/error.h"
 
 using namespace std;
 
@@ -24,11 +21,11 @@ Statement *stringToStatement(string line) {
     scanner.scanNumbers();
     scanner.setInput(line);
     string lineNumber_str = scanner.nextToken();
-    string commandType=scanner.nextToken();
-    if(commandType=="REM"){
+    string commandType = scanner.nextToken();
+    if (commandType == "REM") {
         return new rem_statement;
     }
-    else if(commandType=="LET"){
+    else if (commandType == "LET") {
         Expression *exp;
         try {
             exp = parseExp(scanner);
@@ -38,7 +35,7 @@ Statement *stringToStatement(string line) {
         }
         return new let_statement(exp);
     }
-    else if(commandType=="PRINT"){
+    else if (commandType == "PRINT") {
         Expression *exp;
         try {
             exp = parseExp(scanner);
@@ -48,24 +45,23 @@ Statement *stringToStatement(string line) {
         }
         return new print_statement(exp);
     }
-    else if(commandType=="INPUT"){
-        string var=scanner.nextToken();
-        if(scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
+    else if (commandType == "INPUT") {
+        string var = scanner.nextToken();
+        if (scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
         return new input_statement(var);
     }
-    else if(commandType=="END"){
-        if(scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
+    else if (commandType == "END") {
+        if (scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
         return new end_statement;
     }
-    else if(commandType=="GOTO"){
-        string n_str=scanner.nextToken();
-        if(scanner.getTokenType(n_str)!=NUMBER)throw ErrorException("SYNTAX ERROR");
-        if(scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
+    else if (commandType == "GOTO") {
+        string n_str = scanner.nextToken();
+        if (scanner.getTokenType(n_str) != NUMBER)throw ErrorException("SYNTAX ERROR");
+        if (scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
         return new goto_statement(stringToInteger(n_str));
     }
-    else if(commandType=="IF") {
-        //todo
-        return nullptr;
+    else if (commandType == "IF") {
+        return new if_statement(line);
     }
     else {
         throw ErrorException("SYNTAX ERROR");
@@ -101,6 +97,7 @@ void Program::addSourceLine(int lineNumber, string line) {
 }
 
 void Program::removeSourceLine(int lineNumber) {
+    if (program_body[lineNumber].parsed_representation != nullptr)delete program_body[lineNumber].parsed_representation;
     program_body.erase(lineNumber);
 }
 
@@ -135,22 +132,17 @@ int Program::getNextLineNumber(int lineNumber) {
 }
 
 void Program::run(EvalState &state) {
-    int execute_line=getFirstLineNumber();
-    bool flag=true;
-    while(flag){
-        if(execute_line==-1)flag=false;
+    int execute_line = getFirstLineNumber();
+    while (true) {
+        if (execute_line == -1)break;
         try {
             program_body[execute_line].parsed_representation->execute(state);
-            execute_line=getNextLineNumber(execute_line);
+            execute_line = getNextLineNumber(execute_line);
         }
-        catch (ControlStatement a) {
-            execute_line=a.getMessage();
+        catch (ControlStatement &a) {
+            execute_line = a.getMessage();
+            if(!program_body.count(execute_line))throw ErrorException("LINE NUMBER ERROR");
         }
-    }
-    
-    
-    for (const auto &element : program_body) {
-        (element.second).parsed_representation->execute(state);
     }
 }
 

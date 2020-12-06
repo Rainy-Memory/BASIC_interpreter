@@ -14,6 +14,10 @@
 
 #include "evalstate.h"
 #include "exp.h"
+#include "parser.h"
+#include "../StanfordCPPLib/tokenscanner.h"
+#include "../StanfordCPPLib/simpio.h"
+#include "../StanfordCPPLib/error.h"
 
 /*
  * Class: ControlStatement
@@ -157,14 +161,17 @@ private:
 
 class if_statement: public Statement{
 public:
-    if_statement();
+    if_statement(string);
     ~if_statement();
     void execute(EvalState &);
+    bool judge();
     
 private:
-    string lhs;
-    string rhs;
-    string cmp;
+    Expression *lhs;
+    Expression *rhs;
+    int lhs_value=0;
+    int rhs_value=0;
+    string op="";
     int n;
 };
 

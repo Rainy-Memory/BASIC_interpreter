@@ -31,7 +31,8 @@ void processLine(string line, Program &program, EvalState &state);
 int main() {
     EvalState state;
     Program program;
-    cout << "Stub implementation of BASIC" << endl;
+    cout << "Welcome to BASIC interpreter!" << endl;
+    cout<<"Input \"HELP\" to get more information."<<endl;
     while (true) {
         try {
             processLine(getLine(), program, state);
@@ -64,8 +65,12 @@ void processLine(string line, Program &program, EvalState &state) {
     TokenType first_type = scanner.getTokenType(first_);
     if (first_type == NUMBER) {
         int line_number = stringToInteger(first_);
-        program.addSourceLine(line_number, line);
-        string command_type = scanner.nextToken();
+        try {
+            program.addSourceLine(line_number, line);
+        } catch (ErrorException &ex) {
+            program.removeSourceLine(line_number);
+            throw ErrorException(ex.getMessage());
+        }
     }
     else {
         if (first_ == "LET") {
@@ -88,8 +93,6 @@ void processLine(string line, Program &program, EvalState &state) {
             int value = stringToInteger(value_str);
             state.setValue(var, value);
         }
-        
-        
         else if (first_ == "RUN") {
             program.run(state);
         }
@@ -103,8 +106,40 @@ void processLine(string line, Program &program, EvalState &state) {
             exit(0);
         }
         else if (first_ == "HELP") {
-            cout << "HELP" << endl;
-            //todo add help info
+            //cout << "Input serial number of key words to know more:" << endl;
+            cout << "1: available statements of BASIC" << endl;
+            cout << "Available statements are as follow:" << endl;
+            cout << "REM : This statement is used for comments." << endl;
+            cout << "LET var = exp : This statement is BASIC’s assignment statement." << endl;
+            cout << "PRINT exp : This statement print the value of the expression on the console."<< endl;
+            cout << "INPUT var : This statement print a prompt consisting of the string \" ? \" and then to\n"
+                    "read in a value to be stored in the variable." << endl;
+            cout << "END : Marks the end of the program. Execution halts when this line is reached.\n"
+                    "Execution also stops if the program continues past the last numbered line." << endl;
+            cout << "GOTO n : This statement transfers control unconditionally to line n in the\n"
+                    "program." << endl;
+            cout << "IF exp cmp exp THEN n : This statement performs a conditional transfer of control. On\n"
+                    "encountering such a statement, the BASIC interpreter calculate \"exp cmp exp\".\n"
+                    "If the result of the comparison is true, transfers control to line n in the\n"
+                    "program. if not, the program continues with the next line in sequence." << endl;
+            cout<<endl;
+            
+            cout << "2: commands of BASIC interpreter" << endl;
+            cout<<"Available interpreter command are as follow:"<<endl;
+            cout<<"RUN : This command starts program execution."<<endl;
+            cout<<"LIST : This command lists the steps in the program in numerical sequence."<<endl;
+            cout<<"CLEAR : This command deletes all program and variables."<<endl;
+            cout<<"QUIT : This command exits from the BASIC interpreter."<<endl;
+            cout<<"HELP : This command provides a simple help message describing your interpreter."<<endl;
+            cout<<endl;
+    
+            cout << "3: Error Reporting" << endl;
+            cout<<"Possible error reporting are as follow:"<<endl;
+            cout<<"DIVIDE BY ZERO : Calculating some number divide by zero."<<endl;
+            cout<<"INVALID NUMBER : User types wrong value to answer INPUT statement."<<endl;
+            cout<<"VARIABLE NOT DEFINED : A variable used before assigned it."<<endl;
+            cout<<"LINE NUMBER ERROR GOTO : statement's line number not exist."<<endl;
+            cout<<"SYNTAX ERROR : Any other errors."<<endl;
         }
         else {
             throw ErrorException("SYNTAX ERROR");
