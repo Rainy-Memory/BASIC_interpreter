@@ -29,26 +29,43 @@ Statement *stringToStatement(string line) {
         return new rem_statement;
     }
     else if(commandType=="LET"){
-        Expression *exp = parseExp(scanner);
+        Expression *exp;
+        try {
+            exp = parseExp(scanner);
+        }
+        catch (...) {
+            throw ErrorException("SYNTAX ERROR");
+        }
         return new let_statement(exp);
     }
     else if(commandType=="PRINT"){
-        Expression *exp = parseExp(scanner);
+        Expression *exp;
+        try {
+            exp = parseExp(scanner);
+        }
+        catch (...) {
+            throw ErrorException("SYNTAX ERROR");
+        }
         return new print_statement(exp);
     }
     else if(commandType=="INPUT"){
         string var=scanner.nextToken();
         if(scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
-        
+        return new input_statement(var);
     }
     else if(commandType=="END"){
-    
+        if(scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
+        return new end_statement;
     }
     else if(commandType=="GOTO"){
-    
+        string n_str=scanner.nextToken();
+        if(scanner.getTokenType(n_str)!=NUMBER)throw ErrorException("SYNTAX ERROR");
+        if(scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
+        return new goto_statement(stringToInteger(n_str));
     }
     else if(commandType=="IF") {
-    
+        //todo
+        return nullptr;
     }
     else {
         throw ErrorException("SYNTAX ERROR");
@@ -118,7 +135,20 @@ int Program::getNextLineNumber(int lineNumber) {
 }
 
 void Program::run(EvalState &state) {
-    //todo goto????? Consider throw & catch
+    int execute_line=getFirstLineNumber();
+    bool flag=true;
+    while(flag){
+        if(execute_line==-1)flag=false;
+        try {
+            program_body[execute_line].parsed_representation->execute(state);
+            execute_line=getNextLineNumber(execute_line);
+        }
+        catch (ControlStatement a) {
+            execute_line=a.getMessage();
+        }
+    }
+    
+    
     for (const auto &element : program_body) {
         (element.second).parsed_representation->execute(state);
     }

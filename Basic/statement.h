@@ -15,6 +15,26 @@
 #include "evalstate.h"
 #include "exp.h"
 
+/*
+ * Class: ControlStatement
+ * -----------------------
+ * This class is used to execute end, goto,
+ * and if then statement. By throwing a
+ * ControlStatement variable, the run()
+ * function transfer to the expected line.
+ */
+
+class ControlStatement{
+private:
+    int msg;
+    //-1: END
+    //positive integer: GOTO / IF
+
+public:
+    ControlStatement(int);
+    int getMessage();
+};
+
 
 /*
  * Class: Statement
@@ -127,7 +147,7 @@ private:
 
 class goto_statement: public Statement{
 public:
-    goto_statement();
+    goto_statement(int);
     ~goto_statement();
     void execute(EvalState &);
     

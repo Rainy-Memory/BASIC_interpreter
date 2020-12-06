@@ -19,7 +19,9 @@
  * <code>getTokenType</code> method.
  */
 
-enum TokenType { SEPARATOR, WORD, NUMBER, STRING, OPERATOR };
+enum TokenType {
+    SEPARATOR, WORD, NUMBER, STRING, OPERATOR
+};
 
 /*
  * Class: TokenScanner
@@ -56,18 +58,20 @@ public:
  * the specified string or input stream, if supplied.  The default
  * constructor creates a scanner with an empty token stream.
  */
-
-   TokenScanner();
-   TokenScanner(std::string str);
-   TokenScanner(std::istream & infile);
+    
+    TokenScanner();
+    
+    TokenScanner(std::string str);
+    
+    TokenScanner(std::istream &infile);
 
 /*
  * Destructor: ~TokenScanner
  * -------------------------
  * Deallocates the storage associated with this scanner.
  */
-
-   virtual ~TokenScanner();
+    
+    virtual ~TokenScanner();
 
 /*
  * Method: setInput
@@ -77,9 +81,10 @@ public:
  * Sets the token stream for this scanner to the specified string or
  * input stream.  Any previous token stream is discarded.
  */
-
-   void setInput(std::string str);
-   void setInput(std::istream & infile);
+    
+    void setInput(std::string str);
+    
+    void setInput(std::istream &infile);
 
 /*
  * Method: hasMoreTokens
@@ -88,8 +93,8 @@ public:
  * Returns <code>true</code> if there are additional tokens for this
  * scanner to read.
  */
-
-   bool hasMoreTokens();
+    
+    bool hasMoreTokens();
 
 /*
  * Method: nextToken
@@ -98,8 +103,8 @@ public:
  * Returns the next token from this scanner.  If <code>nextToken</code>
  * is called when no tokens are available, it returns the empty string.
  */
-
-   std::string nextToken();
+    
+    std::string nextToken();
 
 /*
  * Method: saveToken
@@ -110,8 +115,8 @@ public:
  * the saved token without reading any additional characters from the
  * token stream.
  */
-
-   void saveToken(std::string token);
+    
+    void saveToken(std::string token);
 
 /*
  * Method: getPosition
@@ -122,8 +127,8 @@ public:
  * to the beginning of the saved token.  If <code>saveToken</code> is
  * called more than once, <code>getPosition</code> returns -1.
  */
-
-   int getPosition() const;
+    
+    int getPosition() const;
 
 /*
  * Method: ignoreWhitespace
@@ -141,8 +146,8 @@ public:
  *
  * changes this behavior so that the scanner ignore whitespace characters.
  */
-
-   void ignoreWhitespace();
+    
+    void ignoreWhitespace();
 
 /*
  * Method: ignoreComments
@@ -158,8 +163,8 @@ public:
  *
  * sets the parser to ignore comments.
  */
-
-   void ignoreComments();
+    
+    void ignoreComments();
 
 /*
  * Method: scanNumbers
@@ -177,8 +182,8 @@ public:
  * changes this behavior so that <code>nextToken</code> returns the
  * longest substring that can be interpreted as a real number.
  */
-
-   void scanNumbers();
+    
+    void scanNumbers();
 
 /*
  * Method: scanStrings
@@ -197,8 +202,8 @@ public:
  * The quotation marks are returned as part of the scanned token so that
  * clients can differentiate strings from other token types.
  */
-
-   void scanStrings();
+    
+    void scanStrings();
 
 /*
  * Method: addWordCharacters
@@ -209,8 +214,8 @@ public:
  * <code>addWordCharacters("_")</code> adds the underscore to the
  * set of characters that are accepted as part of a word.
  */
-
-   void addWordCharacters(std::string str);
+    
+    void addWordCharacters(std::string str);
 
 /*
  * Method: isWordCharacter
@@ -218,8 +223,8 @@ public:
  * -------------------------------------------
  * Returns <code>true</code> if the character is valid in a word.
  */
-
-   bool isWordCharacter(char ch) const;
+    
+    bool isWordCharacter(char ch) const;
 
 /*
  * Method: addOperator
@@ -230,8 +235,8 @@ public:
  * characters, the scanner returns the longest possible operator
  * string that can be read at that point.
  */
-
-   void addOperator(std::string op);
+    
+    void addOperator(std::string op);
 
 /*
  * Method: verifyToken
@@ -241,8 +246,8 @@ public:
  * <code>expected</code>.  If it does not, <code>verifyToken</code>
  * throws an error.
  */
-
-   void verifyToken(std::string expected);
+    
+    void verifyToken(std::string expected);
 
 /*
  * Method: getTokenType
@@ -253,8 +258,8 @@ public:
  * <code>SEPARATOR</code>, <code>WORD</code>, <code>NUMBER</code>,
  * <code>STRING</code>, or <code>OPERATOR</code>.
  */
-
-TokenType getTokenType(std::string token) const;
+    
+    TokenType getTokenType(std::string token) const;
 
 /*
  * Method: getChar
@@ -262,8 +267,8 @@ TokenType getTokenType(std::string token) const;
  * ----------------------------------
  * Reads the next character from the scanner input stream.
  */
-
-int getChar();
+    
+    int getChar();
 
 /*
  * Method: ungetChar
@@ -272,8 +277,8 @@ int getChar();
  * Pushes the character <code>ch</code> back into the scanner stream.
  * The character must match the one that was read.
  */
-
-void ungetChar(int ch);
+    
+    void ungetChar(int ch);
 
 /*
  * Method: getStringValue
@@ -283,8 +288,8 @@ void ungetChar(int ch);
  * any surrounding quotation marks and replacing escape sequences by the
  * appropriate characters.
  */
-
-   std::string getStringValue(std::string token) const;
+    
+    std::string getStringValue(std::string token) const;
 
 /* Private section */
 
@@ -304,43 +309,49 @@ private:
  * directly because tokenscanner.h is an extremely low-level interface,
  * and doing so would create circular dependencies in the .h files.
  */
-
-   struct StringCell {
-      std::string str;
-      StringCell *link;
-   };
-
-   enum NumberScannerState {
-      INITIAL_STATE,
-      BEFORE_DECIMAL_POINT,
-      AFTER_DECIMAL_POINT,
-      STARTING_EXPONENT,
-      FOUND_EXPONENT_SIGN,
-      SCANNING_EXPONENT,
-      FINAL_STATE
-   };
-
-   std::string buffer;              /* The original argument string */
-   std::istream *isp;               /* The input stream for tokens  */
-   bool stringInputFlag;            /* Flag indicating string input */
-   bool ignoreWhitespaceFlag;       /* Scanner ignores whitespace   */
-   bool ignoreCommentsFlag;         /* Scanner ignores comments     */
-   bool scanNumbersFlag;            /* Scanner parses numbers       */
-   bool scanStringsFlag;            /* Scanner parses strings       */
-   std::string wordChars;           /* Additional word characters   */
-   StringCell *savedTokens;         /* Stack of saved tokens        */
-   StringCell *operators;           /* List of multichar operators  */
+    
+    struct StringCell {
+        std::string str;
+        StringCell *link;
+    };
+    
+    enum NumberScannerState {
+        INITIAL_STATE,
+        BEFORE_DECIMAL_POINT,
+        AFTER_DECIMAL_POINT,
+        STARTING_EXPONENT,
+        FOUND_EXPONENT_SIGN,
+        SCANNING_EXPONENT,
+        FINAL_STATE
+    };
+    
+    std::string buffer;              /* The original argument string */
+    std::istream *isp;               /* The input stream for tokens  */
+    bool stringInputFlag;            /* Flag indicating string input */
+    bool ignoreWhitespaceFlag;       /* Scanner ignores whitespace   */
+    bool ignoreCommentsFlag;         /* Scanner ignores comments     */
+    bool scanNumbersFlag;            /* Scanner parses numbers       */
+    bool scanStringsFlag;            /* Scanner parses strings       */
+    std::string wordChars;           /* Additional word characters   */
+    StringCell *savedTokens;         /* Stack of saved tokens        */
+    StringCell *operators;           /* List of multichar operators  */
 
 /* Private method prototypes */
-
-   void initScanner();
-   void skipSpaces();
-   std::string scanWord();
-   std::string scanNumber();
-   std::string scanString();
-   bool isOperator(std::string op);
-   bool isOperatorPrefix(std::string op);
-
+    
+    void initScanner();
+    
+    void skipSpaces();
+    
+    std::string scanWord();
+    
+    std::string scanNumber();
+    
+    std::string scanString();
+    
+    bool isOperator(std::string op);
+    
+    bool isOperatorPrefix(std::string op);
+    
 };
 
 #endif

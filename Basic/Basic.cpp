@@ -84,7 +84,7 @@ void processLine(string line, Program &program, EvalState &state) {
         }
         else if (first_ == "INPUT") {
             string var = scanner.nextToken();
-            string value_str = getLine("?\n");
+            string value_str = getLine("?");
             int value = stringToInteger(value_str);
             state.setValue(var, value);
         }
