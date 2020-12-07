@@ -32,12 +32,13 @@ int main() {
     EvalState state;
     Program program;
     cout << "Welcome to BASIC interpreter!" << endl;
-    cout<<"Input \"HELP\" to get more information."<<endl;
+    cout << "Input \"HELP\" to get more information." << endl;
     while (true) {
         try {
             processLine(getLine(), program, state);
         } catch (ErrorException &ex) {
-            cerr << "Error: " << ex.getMessage() << endl;
+            //cerr << "Error: " << ex.getMessage() << endl;
+            cerr << ex.getMessage() << endl;
         }
     }
     return 0;
@@ -76,19 +77,59 @@ void processLine(string line, Program &program, EvalState &state) {
         if (first_ == "LET") {
             string var = scanner.nextToken();
             string equal_ = scanner.nextToken();
-            Expression *exp = parseExp(scanner);
-            int value = exp->eval(state);
+            Expression *exp;
+            int value;
+            try {
+                exp = parseExp(scanner);
+                value = exp->eval(state);
+            } catch (ErrorException &ex) {
+                string msg = ex.getMessage();
+                if (msg.size()>40&&strncmp(msg.c_str(), "stringToInteger: Illegal integer format", 40))throw ErrorException("INVALID NUMBER");
+                else {
+                    bool flag = false;
+                    string msg_temp;
+                    for (int i = 0; i < msg.size(); i++) {
+                        if (flag)msg_temp += msg[i];
+                        if (msg[i] == ' ') {
+                            flag = true;
+                        }
+                    }
+                    if (msg.size()>11&&strncmp(msg_temp.c_str(), "is undefined", 9))throw ErrorException("VARIABLE NOT DEFINED");
+                    else throw ErrorException("SYNTAX ERROR");
+                }
+            }
             state.setValue(var, value);
             delete exp;
         }
         else if (first_ == "PRINT") {
-            Expression *exp = parseExp(scanner);
-            int value = exp->eval(state);
+            Expression *exp;
+            int value;
+            try {
+                exp = parseExp(scanner);
+                value = exp->eval(state);
+            } catch (ErrorException &ex) {
+                string msg = ex.getMessage();
+                if (strncmp(msg.c_str(), "stringToInteger: Illegal integer format", 40))throw ErrorException("INVALID NUMBER");
+                else {
+                    bool flag = false;
+                    string msg_temp;
+                    for (int i = 0; i < msg.size(); i++) {
+                        if (flag)msg_temp += msg[i];
+                        if (msg[i] == ' ') {
+                            flag = true;
+                        }
+                    }
+                    if (strncmp(msg_temp.c_str(), "is undefined", 11))throw ErrorException("VARIABLE NOT DEFINED");
+                    else throw ErrorException("SYNTAX ERROR");
+                }
+            }
             cout << value << endl;
             delete exp;
         }
         else if (first_ == "INPUT") {
             string var = scanner.nextToken();
+            if (scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
+            if(!state.isDefined(var))throw ErrorException("VARIABLE NOT DEFINED");
             string value_str = getLine("?");
             int value = stringToInteger(value_str);
             state.setValue(var, value);
@@ -111,7 +152,7 @@ void processLine(string line, Program &program, EvalState &state) {
             cout << "Available statements are as follow:" << endl;
             cout << "REM : This statement is used for comments." << endl;
             cout << "LET var = exp : This statement is BASIC’s assignment statement." << endl;
-            cout << "PRINT exp : This statement print the value of the expression on the console."<< endl;
+            cout << "PRINT exp : This statement print the value of the expression on the console." << endl;
             cout << "INPUT var : This statement print a prompt consisting of the string \" ? \" and then to\n"
                     "read in a value to be stored in the variable." << endl;
             cout << "END : Marks the end of the program. Execution halts when this line is reached.\n"
@@ -122,24 +163,27 @@ void processLine(string line, Program &program, EvalState &state) {
                     "encountering such a statement, the BASIC interpreter calculate \"exp cmp exp\".\n"
                     "If the result of the comparison is true, transfers control to line n in the\n"
                     "program. if not, the program continues with the next line in sequence." << endl;
-            cout<<endl;
+            cout << endl;
             
             cout << "2: commands of BASIC interpreter" << endl;
-            cout<<"Available interpreter command are as follow:"<<endl;
-            cout<<"RUN : This command starts program execution."<<endl;
-            cout<<"LIST : This command lists the steps in the program in numerical sequence."<<endl;
-            cout<<"CLEAR : This command deletes all program and variables."<<endl;
-            cout<<"QUIT : This command exits from the BASIC interpreter."<<endl;
-            cout<<"HELP : This command provides a simple help message describing your interpreter."<<endl;
-            cout<<endl;
-    
+            cout << "Available interpreter command are as follow:" << endl;
+            cout << "RUN : This command starts program execution." << endl;
+            cout << "LIST : This command lists the steps in the program in numerical sequence." << endl;
+            cout << "CLEAR : This command deletes all program and variables." << endl;
+            cout << "QUIT : This command exits from the BASIC interpreter." << endl;
+            cout << "HELP : This command provides a simple help message describing your interpreter." << endl;
+            cout << endl;
+            
             cout << "3: Error Reporting" << endl;
-            cout<<"Possible error reporting are as follow:"<<endl;
-            cout<<"DIVIDE BY ZERO : Calculating some number divide by zero."<<endl;
-            cout<<"INVALID NUMBER : User types wrong value to answer INPUT statement."<<endl;
-            cout<<"VARIABLE NOT DEFINED : A variable used before assigned it."<<endl;
-            cout<<"LINE NUMBER ERROR GOTO : statement's line number not exist."<<endl;
-            cout<<"SYNTAX ERROR : Any other errors."<<endl;
+            cout << "Possible error reporting are as follow:" << endl;
+            cout << "DIVIDE BY ZERO : Calculating some number divide by zero." << endl;
+            cout << "INVALID NUMBER : User types wrong value to answer INPUT statement." << endl;
+            cout << "VARIABLE NOT DEFINED : A variable used before assigned it." << endl;
+            cout << "LINE NUMBER ERROR GOTO : statement's line number not exist." << endl;
+            cout << "SYNTAX ERROR : Any other errors." << endl;
+            cout << endl;
+            
+            cout << "Written by Rainy Memory" << endl;
         }
         else {
             throw ErrorException("SYNTAX ERROR");
@@ -147,9 +191,8 @@ void processLine(string line, Program &program, EvalState &state) {
     }
     
     
-    
     /*Expression *exp = parseExp(scanner);
     int value = exp->eval(state);
-    cout << value << endl;
+    cout << exp->toString() << endl;
     delete exp;*/
 }

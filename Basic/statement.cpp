@@ -55,7 +55,24 @@ let_statement::~let_statement() {
 }
 
 void let_statement::execute(EvalState &state) {
-    exp->eval(state);
+    try {
+        exp->eval(state);
+    } catch (ErrorException &ex) {
+        string msg = ex.getMessage();
+        if (strncmp(msg.c_str(), "stringToInteger: Illegal integer format", 40))throw ErrorException("INVALID NUMBER");
+        else {
+            bool flag = false;
+            string msg_temp;
+            for (int i = 0; i < msg.size(); i++) {
+                if (flag)msg_temp += msg[i];
+                if (msg[i] == ' ') {
+                    flag = true;
+                }
+            }
+            if (strncmp(msg_temp.c_str(), "is undefined", 11))throw ErrorException("VARIABLE NOT DEFINED");
+            else throw ErrorException("SYNTAX ERROR");
+        }
+    }
 }
 
 
@@ -68,7 +85,25 @@ print_statement::~print_statement() {
 }
 
 void print_statement::execute(EvalState &state) {
-    int value = exp->eval(state);
+    int value;
+    try {
+        value = exp->eval(state);
+    } catch (ErrorException &ex) {
+        string msg = ex.getMessage();
+        if (strncmp(msg.c_str(), "stringToInteger: Illegal integer format", 40))throw ErrorException("INVALID NUMBER");
+        else {
+            bool flag = false;
+            string msg_temp;
+            for (int i = 0; i < msg.size(); i++) {
+                if (flag)msg_temp += msg[i];
+                if (msg[i] == ' ') {
+                    flag = true;
+                }
+            }
+            if (strncmp(msg_temp.c_str(), "is undefined", 11))throw ErrorException("VARIABLE NOT DEFINED");
+            else throw ErrorException("SYNTAX ERROR");
+        }
+    }
     cout << value << endl;
 }
 
@@ -115,10 +150,21 @@ void goto_statement::execute(EvalState &state) {
 
 
 if_statement::if_statement(string line_) {
+    int op_pos=-1;
+    for(int i=0;i<line_.size();i++){
+        if(line_[i]=='<'||line_[i]=='='||line_[i]=='>'){
+            op_pos=i;
+            break;
+        }
+    }
+    string left,right;
+    for(int i=0;i<line_.size();i++){
+        (i<op_pos?left:right)+=line_[i];
+    }
     TokenScanner scanner_;
     scanner_.ignoreWhitespace();
     scanner_.scanNumbers();
-    scanner_.setInput(line_);
+    scanner_.setInput(left);
     string n_str=scanner_.nextToken();
     n_str=scanner_.nextToken();
     try {
@@ -126,6 +172,7 @@ if_statement::if_statement(string line_) {
     } catch (...) {
         throw ErrorException("SYNTAX ERROR");
     }
+    scanner_.setInput(right);
     op=scanner_.nextToken();
     if(op!="<"&&op!=">"&&op!="=")throw ErrorException("SYNTAX ERROR");
     try {

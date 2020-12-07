@@ -141,7 +141,7 @@ void Program::run(EvalState &state) {
         }
         catch (ControlStatement &a) {
             execute_line = a.getMessage();
-            if(!program_body.count(execute_line))throw ErrorException("LINE NUMBER ERROR");
+            if((execute_line!=-1)&&(!program_body.count(execute_line)))throw ErrorException("LINE NUMBER ERROR");
         }
     }
 }

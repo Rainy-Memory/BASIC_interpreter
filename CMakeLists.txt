@@ -12,4 +12,5 @@ add_executable(BASIC_interpreter Basic/Basic.cpp
         StanfordCPPLib/error.cpp StanfordCPPLib/error.h
         StanfordCPPLib/tokenscanner.cpp StanfordCPPLib/tokenscanner.h
         StanfordCPPLib/simpio.cpp StanfordCPPLib/simpio.h
-        StanfordCPPLib/strlib.cpp StanfordCPPLib/strlib.h)
+        StanfordCPPLib/strlib.cpp StanfordCPPLib/strlib.h
+        )
