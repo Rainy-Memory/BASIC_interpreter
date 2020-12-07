@@ -31,8 +31,8 @@ void processLine(string line, Program &program, EvalState &state);
 int main() {
     EvalState state;
     Program program;
-    cout << "Welcome to BASIC interpreter!" << endl;
-    cout << "Input \"HELP\" to get more information." << endl;
+    //cout << "Welcome to BASIC interpreter!" << endl;
+    //cout << "Input \"HELP\" to get more information." << endl;
     while (true) {
         try {
             processLine(getLine(), program, state);
@@ -61,12 +61,21 @@ int main() {
                 }
                 
                 flag = false;
+                const string il_int="stringToInteger: Illegal integer format";
                 if (msg.size() > 40) {
-                    for (int i = 0;)
+                    for (int i = 0;i<40;i++){
+                        if(msg[i]!=il_int[i]){
+                            flag=true;
+                            break;
+                        }
+                    }
+                }
+                if(flag){
+                    ErrorReport="INVALID NUMBER";
+                    flag_syntax=false;
                 }
                 
-                
-                else { if (flag_syntax)ErrorReport = "SYNTAX ERROR"; }
+                if (flag_syntax)ErrorReport = "SYNTAX ERROR";
             }
             //cerr << "Error: " << ex.getMessage() << endl;
             cerr << ErrorReport << endl;
