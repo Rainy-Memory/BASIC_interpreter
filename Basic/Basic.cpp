@@ -163,8 +163,7 @@ void processLine(string line, Program &program, EvalState &state) {
                     "read in a value to be stored in the variable." << endl;
             cout << "END : Marks the end of the program. Execution halts when this line is reached.\n"
                     "Execution also stops if the program continues past the last numbered line." << endl;
-            cout << "GOTO n : This statement transfers control unconditionally to line n in the\n"
-                    "program." << endl;
+            cout << "GOTO n : This statement transfers control unconditionally to line n in the program." << endl;
             cout << "IF exp cmp exp THEN n : This statement performs a conditional transfer of control. On\n"
                     "encountering such a statement, the BASIC interpreter calculate \"exp cmp exp\".\n"
                     "If the result of the comparison is true, transfers control to line n in the\n"
