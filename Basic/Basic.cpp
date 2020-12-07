@@ -37,8 +37,39 @@ int main() {
         try {
             processLine(getLine(), program, state);
         } catch (ErrorException &ex) {
+            string msg = ex.getMessage();
+            string ErrorReport;
+            if (msg == "DIVIDE BY ZERO")ErrorReport = "DIVIDE BY ZERO";
+            else if (msg == "INVALID NUMBER")ErrorReport = "INVALID NUMBER";
+            else if (msg == "VARIABLE NOT DEFINED")ErrorReport = "VARIABLE NOT DEFINED";
+            else if (msg == "LINE NUMBER ERROR")ErrorReport = "LINE NUMBER ERROR";
+            else if (msg == "SYNTAX ERROR")ErrorReport = "SYNTAX ERROR";
+            else if (msg == "Divided by zero")ErrorReport = "DIVIDE BY ZERO";
+            else {
+                bool flag = false;
+                bool flag_syntax = true;
+                string msg_temp;
+                for (int i = 0; i < msg.size(); i++) {
+                    if (flag)msg_temp += msg[i];
+                    if (msg[i] == ' ') {
+                        flag = true;
+                    }
+                }
+                if (msg_temp == "is undefined") {
+                    ErrorReport = "VARIABLE NOT DEFINED";
+                    flag_syntax = false;
+                }
+                
+                flag = false;
+                if (msg.size() > 40) {
+                    for (int i = 0;)
+                }
+                
+                
+                else { if (flag_syntax)ErrorReport = "SYNTAX ERROR"; }
+            }
             //cerr << "Error: " << ex.getMessage() << endl;
-            cerr << ex.getMessage() << endl;
+            cerr << ErrorReport << endl;
         }
     }
     return 0;
@@ -79,57 +110,22 @@ void processLine(string line, Program &program, EvalState &state) {
             string equal_ = scanner.nextToken();
             Expression *exp;
             int value;
-            try {
-                exp = parseExp(scanner);
-                value = exp->eval(state);
-            } catch (ErrorException &ex) {
-                string msg = ex.getMessage();
-                if (msg.size()>40&&strncmp(msg.c_str(), "stringToInteger: Illegal integer format", 40))throw ErrorException("INVALID NUMBER");
-                else {
-                    bool flag = false;
-                    string msg_temp;
-                    for (int i = 0; i < msg.size(); i++) {
-                        if (flag)msg_temp += msg[i];
-                        if (msg[i] == ' ') {
-                            flag = true;
-                        }
-                    }
-                    if (msg.size()>11&&strncmp(msg_temp.c_str(), "is undefined", 9))throw ErrorException("VARIABLE NOT DEFINED");
-                    else throw ErrorException("SYNTAX ERROR");
-                }
-            }
+            exp = parseExp(scanner);
+            value = exp->eval(state);
             state.setValue(var, value);
             delete exp;
         }
         else if (first_ == "PRINT") {
             Expression *exp;
             int value;
-            try {
-                exp = parseExp(scanner);
-                value = exp->eval(state);
-            } catch (ErrorException &ex) {
-                string msg = ex.getMessage();
-                if (strncmp(msg.c_str(), "stringToInteger: Illegal integer format", 40))throw ErrorException("INVALID NUMBER");
-                else {
-                    bool flag = false;
-                    string msg_temp;
-                    for (int i = 0; i < msg.size(); i++) {
-                        if (flag)msg_temp += msg[i];
-                        if (msg[i] == ' ') {
-                            flag = true;
-                        }
-                    }
-                    if (strncmp(msg_temp.c_str(), "is undefined", 11))throw ErrorException("VARIABLE NOT DEFINED");
-                    else throw ErrorException("SYNTAX ERROR");
-                }
-            }
+            exp = parseExp(scanner);
+            value = exp->eval(state);
             cout << value << endl;
             delete exp;
         }
         else if (first_ == "INPUT") {
             string var = scanner.nextToken();
             if (scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
-            if(!state.isDefined(var))throw ErrorException("VARIABLE NOT DEFINED");
             string value_str = getLine("?");
             int value = stringToInteger(value_str);
             state.setValue(var, value);
@@ -193,6 +189,6 @@ void processLine(string line, Program &program, EvalState &state) {
     
     /*Expression *exp = parseExp(scanner);
     int value = exp->eval(state);
-    cout << exp->toString() << endl;
+    cout << value << " "<<exp->toString()<<" " << exp->getType()<< endl;
     delete exp;*/
 }

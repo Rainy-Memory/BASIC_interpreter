@@ -27,22 +27,12 @@ Statement *stringToStatement(string line) {
     }
     else if (commandType == "LET") {
         Expression *exp;
-        try {
-            exp = parseExp(scanner);
-        }
-        catch (...) {
-            throw ErrorException("SYNTAX ERROR");
-        }
+        exp = parseExp(scanner);
         return new let_statement(exp);
     }
     else if (commandType == "PRINT") {
         Expression *exp;
-        try {
-            exp = parseExp(scanner);
-        }
-        catch (...) {
-            throw ErrorException("SYNTAX ERROR");
-        }
+        exp = parseExp(scanner);
         return new print_statement(exp);
     }
     else if (commandType == "INPUT") {
@@ -141,7 +131,7 @@ void Program::run(EvalState &state) {
         }
         catch (ControlStatement &a) {
             execute_line = a.getMessage();
-            if((execute_line!=-1)&&(!program_body.count(execute_line)))throw ErrorException("LINE NUMBER ERROR");
+            if ((execute_line != -1) && (!program_body.count(execute_line)))throw ErrorException("LINE NUMBER ERROR");
         }
     }
 }
