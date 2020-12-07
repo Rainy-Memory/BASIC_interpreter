@@ -72,6 +72,15 @@ public:
  */
 
    bool isDefined(std::string var);
+   
+/*
+ * Method: clear
+ * Usage: state.clear();
+ * ---------------------
+ * Clear all variables.
+ */
+   
+   void clear();
 
 private:
 

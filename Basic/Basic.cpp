@@ -147,6 +147,7 @@ void processLine(string line, Program &program, EvalState &state) {
         }
         else if (first_ == "CLEAR") {
             program.clear();
+            state.clear();
         }
         else if (first_ == "QUIT") {
             exit(0);
