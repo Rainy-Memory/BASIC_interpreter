@@ -81,7 +81,6 @@ int main() {
             cerr << ErrorReport << endl;
         }
     }
-    return 0;
 }
 
 /*
