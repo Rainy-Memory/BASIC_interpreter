@@ -61,18 +61,18 @@ int main() {
                 }
                 
                 flag = false;
-                const string il_int="stringToInteger: Illegal integer format";
+                const string il_int = "stringToInteger: Illegal integer format";
                 if (msg.size() > 40) {
-                    for (int i = 0;i<40;i++){
-                        if(msg[i]!=il_int[i]){
-                            flag=true;
+                    for (int i = 0; i < 40; i++) {
+                        if (msg[i] != il_int[i]) {
+                            flag = true;
                             break;
                         }
                     }
                 }
-                if(flag){
-                    ErrorReport="INVALID NUMBER";
-                    flag_syntax=false;
+                if (flag) {
+                    ErrorReport = "INVALID NUMBER";
+                    flag_syntax = false;
                 }
                 
                 if (flag_syntax)ErrorReport = "SYNTAX ERROR";
@@ -105,18 +105,21 @@ void processLine(string line, Program &program, EvalState &state) {
     TokenType first_type = scanner.getTokenType(first_);
     if (first_type == NUMBER) {
         int line_number = stringToInteger(first_);
-        if(line_number<=0)throw ErrorException("LINE NUMBER ERROR");
-        try {
-            program.addSourceLine(line_number, line);
-        } catch (ErrorException &ex) {
-            program.removeSourceLine(line_number);
-            throw ErrorException(ex.getMessage());
+        if (line_number <= 0)throw ErrorException("LINE NUMBER ERROR");
+        if(scanner.hasMoreTokens()){
+            try {
+                program.addSourceLine(line_number, line);
+            } catch (ErrorException &ex) {
+                program.removeSourceLine(line_number);
+                throw ErrorException(ex.getMessage());
+            }
         }
+        else program.removeSourceLine(line_number);
     }
     else {
         if (first_ == "LET") {
             string var = scanner.nextToken();
-            if(judgeReservedWords(var))throw ErrorException("SYNTAX ERROR");
+            if (judgeReservedWords(var))throw ErrorException("SYNTAX ERROR");
             string equal_ = scanner.nextToken();
             Expression *exp;
             int value;
@@ -136,15 +139,15 @@ void processLine(string line, Program &program, EvalState &state) {
         else if (first_ == "INPUT") {
             string var = scanner.nextToken();
             if (scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
-            if(judgeReservedWords(var))throw ErrorException("SYNTAX ERROR");
+            if (judgeReservedWords(var))throw ErrorException("SYNTAX ERROR");
             string value_str;
             int value;
-            while(true){
-                try{
+            while (true) {
+                try {
                     value_str = getLine(" ? ");
                     value = stringToInteger(value_str);
                 } catch (...) {
-                    cout<<"INVALID NUMBER"<<endl;
+                    cout << "INVALID NUMBER" << endl;
                     continue;
                 }
                 break;
