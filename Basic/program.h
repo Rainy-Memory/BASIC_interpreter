@@ -18,11 +18,21 @@ using namespace std;
 
 /*
  * Method: stringToStatement
- * Usage:
+ * Usage: Statement *exp = stringToStatement(line);
+ * -----------------------------------------------
+ * Parse BASIC command to C++ statement.
  */
 
 Statement *stringToStatement(string);
 
+/*
+ * Method: judgeReservedWords
+ * Usage: if(judgeReservedWords(var))...
+ * ---------------------------------------
+ * Judging whether variable's name is a reserved word.
+ */
+
+bool judgeReservedWords(string);
 
 /*
  * This class stores the lines in a BASIC program.  Each line

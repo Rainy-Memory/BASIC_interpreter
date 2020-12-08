@@ -59,6 +59,24 @@ Statement *stringToStatement(string line) {
 }
 
 
+bool judgeReservedWords(string var){
+    if(var=="REM")return true;
+    if(var=="LET")return true;
+    if(var=="PRINT")return true;
+    if(var=="INPUT")return true;
+    if(var=="END")return true;
+    if(var=="GOTO")return true;
+    if(var=="IF")return true;
+    if(var=="THEN")return true;
+    if(var=="RUN")return true;
+    if(var=="LIST")return true;
+    if(var=="CLEAR")return true;
+    if(var=="QUIT")return true;
+    if(var=="HELP")return true;
+    return true;
+}
+
+
 Program::Program() {
     //do nothing?
 }

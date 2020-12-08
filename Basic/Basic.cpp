@@ -77,7 +77,6 @@ int main() {
                 
                 if (flag_syntax)ErrorReport = "SYNTAX ERROR";
             }
-            //cerr << "Error: " << ex.getMessage() << endl;
             cerr << ErrorReport << endl;
         }
     }
@@ -106,16 +105,23 @@ void processLine(string line, Program &program, EvalState &state) {
     TokenType first_type = scanner.getTokenType(first_);
     if (first_type == NUMBER) {
         int line_number = stringToInteger(first_);
-        try {
-            program.addSourceLine(line_number, line);
-        } catch (ErrorException &ex) {
+        if(line_number<=0)throw ErrorException("LINE NUMBER ERROR");
+        if(scanner.hasMoreTokens()){
+            try {
+                program.addSourceLine(line_number, line);
+            } catch (ErrorException &ex) {
+                program.removeSourceLine(line_number);
+                throw ErrorException(ex.getMessage());
+            }
+        }
+        else {
             program.removeSourceLine(line_number);
-            throw ErrorException(ex.getMessage());
         }
     }
     else {
         if (first_ == "LET") {
             string var = scanner.nextToken();
+            if(judgeReservedWords(var))throw ErrorException("SYNTAX ERROR");
             string equal_ = scanner.nextToken();
             Expression *exp;
             int value;
@@ -135,7 +141,8 @@ void processLine(string line, Program &program, EvalState &state) {
         else if (first_ == "INPUT") {
             string var = scanner.nextToken();
             if (scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
-            string value_str = getLine("?");
+            if(judgeReservedWords(var))throw ErrorException("SYNTAX ERROR");
+            string value_str = getLine(" ? ");
             int value = stringToInteger(value_str);
             state.setValue(var, value);
         }
@@ -194,8 +201,6 @@ void processLine(string line, Program &program, EvalState &state) {
             throw ErrorException("SYNTAX ERROR");
         }
     }
-    
-    
     /*Expression *exp = parseExp(scanner);
     int value = exp->eval(state);
     cout << value << " "<<exp->toString()<<" " << exp->getType()<< endl;

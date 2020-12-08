@@ -82,7 +82,7 @@ input_statement::~input_statement() {
 }
 
 void input_statement::execute(EvalState &state) {
-    string value_str = getLine("?");
+    string value_str = getLine(" ? ");
     int value = stringToInteger(value_str);
     state.setValue(var, value);
 }
@@ -122,6 +122,7 @@ if_statement::if_statement(string line_) {
             break;
         }
     }
+    if (op_pos == -1)throw ErrorException("SYNTAX ERROR");
     string left, right;
     for (int i = 0; i < line_.size(); i++) {
         (i < op_pos ? left : right) += line_[i];
