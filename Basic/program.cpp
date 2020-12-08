@@ -73,7 +73,7 @@ bool judgeReservedWords(string var){
     if(var=="CLEAR")return true;
     if(var=="QUIT")return true;
     if(var=="HELP")return true;
-    return true;
+    return false;
 }
 
 

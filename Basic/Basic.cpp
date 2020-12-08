@@ -77,6 +77,7 @@ int main() {
                 
                 if (flag_syntax)ErrorReport = "SYNTAX ERROR";
             }
+            //cerr << "Error: " << ex.getMessage() << endl;
             cerr << ErrorReport << endl;
         }
     }
@@ -106,16 +107,11 @@ void processLine(string line, Program &program, EvalState &state) {
     if (first_type == NUMBER) {
         int line_number = stringToInteger(first_);
         if(line_number<=0)throw ErrorException("LINE NUMBER ERROR");
-        if(scanner.hasMoreTokens()){
-            try {
-                program.addSourceLine(line_number, line);
-            } catch (ErrorException &ex) {
-                program.removeSourceLine(line_number);
-                throw ErrorException(ex.getMessage());
-            }
-        }
-        else {
+        try {
+            program.addSourceLine(line_number, line);
+        } catch (ErrorException &ex) {
             program.removeSourceLine(line_number);
+            throw ErrorException(ex.getMessage());
         }
     }
     else {
