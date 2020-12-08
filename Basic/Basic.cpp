@@ -78,7 +78,7 @@ int main() {
                 if (flag_syntax)ErrorReport = "SYNTAX ERROR";
             }
             //cerr << "Error: " << ex.getMessage() << endl;
-            cerr << ErrorReport << endl;
+            cout << ErrorReport << endl;
         }
     }
 }
@@ -137,8 +137,18 @@ void processLine(string line, Program &program, EvalState &state) {
             string var = scanner.nextToken();
             if (scanner.hasMoreTokens())throw ErrorException("SYNTAX ERROR");
             if(judgeReservedWords(var))throw ErrorException("SYNTAX ERROR");
-            string value_str = getLine(" ? ");
-            int value = stringToInteger(value_str);
+            string value_str;
+            int value;
+            while(true){
+                try{
+                    value_str = getLine(" ? ");
+                    value = stringToInteger(value_str);
+                } catch (...) {
+                    cout<<"INVALID NUMBER"<<endl;
+                    continue;
+                }
+                break;
+            }
             state.setValue(var, value);
         }
         else if (first_ == "RUN") {

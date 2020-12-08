@@ -82,8 +82,18 @@ input_statement::~input_statement() {
 }
 
 void input_statement::execute(EvalState &state) {
-    string value_str = getLine(" ? ");
-    int value = stringToInteger(value_str);
+    string value_str;
+    int value;
+    while(true){
+        try{
+            value_str = getLine(" ? ");
+            value = stringToInteger(value_str);
+        } catch (...) {
+            cout<<"INVALID NUMBER"<<endl;
+            continue;
+        }
+        break;
+    }
     state.setValue(var, value);
 }
 
